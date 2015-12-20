@@ -38,7 +38,7 @@
 		      </section>
 
 		      <section class="middle tab-bar-section">
-		        <h1><a href="#/planner" class="data-title" style='color: white;'></a></h1>
+		        <h1><a href="#/newScreen" class="data-title" style='color: white;'></a></h1>
 		      </section>
 
 					<section class="right-small">
@@ -51,7 +51,7 @@
 		    <aside class="left-off-canvas-menu">
 		      <ul class="off-canvas-list">
 		        <li><label>Links</label></li>
-                <li><a href="#/planner"><i class="fa fa-home "></i> Planner</a></li>
+                <li><a href="#/newScreen"><i class="fa fa-home "></i> New Screen</a></li>
 		        <li><a href="#/calendar"><i class="fa fa-calendar"></i> Calendar</a></li>
                 <!--<li><a href="#/forum"><i class="fa fa-comments"></i> Forum</a></li>-->
                 <!--<li><a href='#' data-reveal-id='login-modal'>Login</a></li>-->
@@ -145,14 +145,14 @@
                     $('#login-modal').foundation('reveal', 'open');
                 });
 
-                // If logged in on the main page, go to the planner
+                // If logged in on the main page, go to the newScreen
                 if (localStorage.getItem("login") === "1") {
                     if (window.location.hash == "") {
-                        window.location.href = "#/planner";
+                        window.location.href = "#/newScreen";
                     }
                 // If not logged in, show login form
                 } else {
-                    $('#login-modal').foundation('reveal', 'open');
+                    //$('#login-modal').foundation('reveal', 'open');
                     $('#login-form').submit(function(event) {
                         // prevent form from being submitted
                         event.preventDefault();
@@ -172,7 +172,7 @@
                                     localStorage.setItem("username", username);
                                     localStorage.setItem("wwuid", data.wwuid);
                                     $('#login-modal').foundation('reveal', 'close');
-                                    window.location.href = "#/planner";
+                                    window.location.href = "#/newScreen";
                                 } else {
                                     $("#login-modal .errors h5").text(data.error);
                                 }
