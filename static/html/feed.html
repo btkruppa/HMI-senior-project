@@ -1,0 +1,177 @@
+<!-- feed.html -->
+<script src='static/fullcalendar/lib/moment.min.js'></script>
+<link type="text/css" rel=StyleSheet href = "static/planner/planner.css">
+<script>
+/*
+ * Add example data at the click of a button
+ */
+// For debugging
+debug=false;
+function log(str) {
+    if (debug)
+        $("#log").append(str+"<br>")
+}
+function logJSON(json) {
+    log(JSON.stringify(json))
+}
+
+// This is different from the on on the NewFeed page since we have to call
+// the getFeeds() on success.
+function addFeed(title, description, private, get) {
+    $.ajax({
+        url: config.server+"/feed",
+        method: "PUT",
+        data: {"title": title, "description": description, "private": (private)?"1":"0"},
+        cache: false,
+        success: function(data) {
+            logJSON(data["feed"])
+
+            if (get)
+                getFeeds()
+        }, error: function(XMLHttpRequest, textStatus, errorThrown) {
+            log("Status: " + textStatus + " Error: " + errorThrown);
+        }
+    })
+}
+function addItem(title, feed, description, start, end) {
+    // Zero-length events are all-day events, and the end is zero
+    if (start == end || end == "")
+        end = moment(start).endOf('day').format()
+
+    // Set format correctly
+    start = moment(start).format()
+
+    $.ajax({
+        url: config.server+"/item",
+        method: "PUT",
+        data: {"title": title, "feed_id": feed, "description": description, "start": start, "end": end},
+        cache: false,
+        success: function(data) {
+            window.item=data
+            logJSON(data)
+        }, error: function(XMLHttpRequest, textStatus, errorThrown) {
+            log("Status: " + textStatus + " Error: " + errorThrown);
+        }
+    })
+}
+function getFeeds() {
+    $.ajax({
+        url: config.server+"/user_feeds",
+        method: "GET",
+        cache: false,
+        dataType: "json",
+        success: function(data) {
+            for (var i=0; i < data.length; ++i) {
+                var id=data[i].id;
+                var desc=data[i].description;
+                var title=data[i].title;
+                var private=data[i].private;
+                var admin=data[i].administrators;
+                var owner=data[i].owner;
+                var id=data[i].id;
+
+                if (id==1) {
+                    addItem("Title 1", id, "Desc 1", "2015-11-02T16:00", "2015-11-03T11:00")
+                    addItem("All Day Event", id, "this is a very long all day event", "2015-11-01T00:00", "2015-11-01T00:00")
+                    addItem("Long Event", id, "This is another long event...", "2015-11-01T00:00", "")
+                    addItem("Repeating Event", id, "This is a repeating event with an ID of 999", "2015-11-02T16:00:00", "")
+                    addItem("Repeating Event", id, "This is the same repeating event with an ID of 999", "2015-11-03T16:00:00", "") // TODO: not really...
+                    addItem("Conference", id, "This is a conference on the eleventh", "2015-11-03T00:00", "2015-11-13T00:00")
+                    addItem("Meeting", id, "This is a meeting! Yay!", "2015-11-03T10:30:00", "2015-11-12T12:30:00")
+                    addItem("Lunch", id, "Lunch! I love lunch!!!", "2015-11-12T12:30:00", "")
+                    addItem("Meeting", id, "No Description", "2015-11-05T14:30:00", "")
+                    addItem("<b>Happy Hour</b>", id, "<i>Woe is me... for I have homework</i>", "2015-11-06T17:30:00", "")
+                    addItem("Dinner", id, "", "2015-11-12T20:00:00", "")
+                    addItem("Birthday Party", id, "", "2015-11-13T07:00:00", "")
+                    addItem("Click for <a href='https://google.com'>Google</a>", id, "\"Use Bing\" says the voice in your head.", "2015-11-28T00:00", "")
+                } else if (id==2) {
+                    addItem("Title 2", id, "Desc 2", "2015-11-05T00:00", "")
+                }
+            }
+            logJSON(data)
+        }, error: function(XMLHttpRequest, textStatus, errorThrown) {
+            log("Status: " + textStatus + " Error: " + errorThrown);
+        }
+    })
+}
+function getItems() {
+    /*$.ajax({
+        url: config.server+"/user_items_by_datetime/2015-1-1/2016-1-1",
+        method: "GET",
+        cache: false,
+        dataType: "json",
+        success: function(data) {
+            logJSON(data)
+        }
+    })*/
+}
+$(document).ready(function() {
+    if (debug) {
+        getItems()
+        $("#debugForm").show();
+        $("#debugForm input[type=submit]").click(function(event){
+            event.preventDefault();
+            addFeed("Feed 1", "Example feed", true, false);
+            addFeed("Feed 2", "Another example feed", true, true);
+        });
+    }
+})
+
+/*
+ * Display the list of feeds
+ */
+function feedList() {
+    $.ajax({
+        url: config.server+"/user_feeds",
+        method: "GET",
+        cache: false,
+        dataType: "json",
+        success: function(data) {
+            for (var i=0; i < data.length; ++i) {
+                var id=data[i].id;
+                var desc=data[i].description;
+                var title=data[i].title;
+                var private=data[i].private;
+                var admin=data[i].administrators;
+                var owner=data[i].owner;
+                var id=data[i].id;
+
+                // Create HTML escaping properly
+                var itemDiv = $("<div class ='plannerItem'></div>")
+                var titleDiv = $("<div class='date'></div>")
+                var descDiv  = $("<div class='eventName'></div>")
+                titleDiv.text(title);
+                descDiv.text(desc);
+                descDiv.append($("<a href=\"#/EditFeed/"+id+"\"> <i class =\"fi-page-edit\"></i></a>"));
+                $('#feeds').append(itemDiv.append(titleDiv, descDiv))
+            }
+
+            if (data.length == 0) {
+                $("#error").show();
+            }
+
+            logJSON(data)
+        }, error: function(XMLHttpRequest, textStatus, errorThrown) {
+            log("Status: " + textStatus + " Error: " + errorThrown);
+        }
+    });
+}
+
+$(document).ready(function() {
+    feedList()
+});
+</script>
+<form id="debugForm" style="display:none"><input type="submit" value="Add demo data" /></form>
+
+<style>
+#error {display:none;}
+</style>
+<div class="row" id="error">
+  <div class="small-12 columns">
+    <h3 style='text-align: center;'>Please create a feed</h3>
+  </div>
+</div>
+
+<div id="feeds"></div>
+<div id="eventDetails"></div>
+<pre id="log" style="white-space: pre-wrap;"></pre>
