@@ -1,0 +1,14 @@
+“screen_id”: this should be assigned auto based on the screen it is created in as a way to
+              store elements for different screens
+"screen_title": title for screen name, any string of text
+"id": id for individual element
+"left": this is the position from the left edge of screen, can be in %, px, em, in …
+"top": this is the position from the left edge of screen, can be in %, px, em, in …
+"type": this can be button, image, text
+“border”: this is for text only, dotted, dashed, solid, double, groove, ridge, inset, outset
+“plc”: this can be read or write
+“color”: selected from color wheel, ideally, for now select from standard colors
+“size”:
+“level”: minimum access level to view this element
+“label”: if not null then will label the text or button
+ 

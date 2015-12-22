@@ -1,21 +1,21 @@
 [
   {
-    "id": "1",
-    "left": "10%",
-    "top": "10%",
-    "type": "button",
     "border": "solid",
-    "plc": "write",
     "color": "black",
-    "size": "null",
+    "screen_id": "1",
+    "left": "10%",
     "level": "7",
-    "title": "button 1"
+    "plc": "write",
+    "size": "null",
+    "title": "button 1",
+    "top": "10%",
+    "type": "button"
   },
   {
-    "id": "2",
+    "screen_id": "1",
     "left": "20%",
     "top": "20%",
-    "type": "text",
+    "type": "button",
     "border": "groove",
     "plc": "read",
     "color": "black",
@@ -24,10 +24,10 @@
     "title": "Hello World!"
   },
   {
-    "id": "3",
+    "screen_id": "1",
     "left": "30%",
     "top": "30%",
-    "type": "text",
+    "type": "button",
     "border": "solid",
     "plc": "read",
     "color": "black",
@@ -36,7 +36,7 @@
     "title": "solid border"
   },
   {
-    "id": "4",
+    "screen_id": "1",
     "left": "40%",
     "top": "40%",
     "type": "text",
@@ -48,7 +48,7 @@
     "title": "Groove Border"
   },
   {
-    "id": "5",
+    "screen_id": "1",
     "left": "50%",
     "top": "50%",
     "type": "text",
@@ -60,7 +60,7 @@
     "title": "blue text, no border"
   },
   {
-    "id": "6",
+    "screen_id": "1",
     "left": "60%",
     "top": "60%",
     "type": "text",

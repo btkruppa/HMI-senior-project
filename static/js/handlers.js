@@ -4,8 +4,8 @@ var main = $("#main-content");
 
 var handlers = [
 	["/calendar.*", calendarHandler],
-	["/EditItem/.*", editHandler],
-	["/NewItem", editHandler],
+	["/EditElement/.*", editHandler],
+	["/NewElement", editHandler],
 	["/EditFeed/.*", feedHandler],
 	["/NewFeed", feedHandler],
 	["/.*", pageHandler],
@@ -90,7 +90,7 @@ function calendarHandler(path1, path2) {
 
 var getIdent;
 function editHandler(id){
-	loader(main, "static/html/NewItem.html", function() {
+	loader(main, "static/html/NewElement.html", function() {
 	});
 	function getID(){
 		var ident = id;

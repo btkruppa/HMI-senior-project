@@ -25,14 +25,17 @@ class Feed(Base):
 class Item(Base):
     __tablename__ = 'items'
     id = Column(Integer, primary_key=True)
-    feed_id = Column(Integer, ForeignKey("feeds.id"), nullable=False)
-    title = Column(String(250), nullable=False)
-    description = Column(String(250))
-    location = Column(String(500))
-    repeat = Column(String(250))
-    start = Column(DateTime, nullable=False)
-    end = Column(DateTime, nullable=False)
-    creator = Column(Integer, ForeignKey("users.wwuid"), nullable=False)
-    updated_at = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+    feed_id = Column(Integer, ForeignKey("feed.id"), nullable=False)
+    left = Column(String(250))
+    top = Column(String(250))
+    type = Column(String(250))
+    border = Column(String(250))
+    plc = Column(String(250))
+    color = Column(String(250))
+    size = Column(String(250))
+    level = Column(Integer)
+    label = Column(String(250))
+    #creator = Column(Integer, ForeignKey("users.wwuid"), nullable=False)
+    #updated_at = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     def to_json(self):
-        return {'id': str(self.id), 'feed_id': str(self.feed_id), 'title': str(self.title), 'description': str(self.description), 'location': str(self.location), 'repeat': str(self.repeat), 'start': str(self.start.strftime("%Y-%m-%dT%H:%M:%S")), 'end': str(self.end.strftime("%Y-%m-%dT%H:%M:%S")), 'creator': str(self.creator), 'updated_at': str(self.updated_at)}
+        return {'id': str(self.id), 'feed_id': str(self.feed_id), 'left': str(self.left), 'top': str(self.top), 'type': str(self.type), 'boarder': str(self.boarder), 'plc': str(self.plc), 'color': str(self.color), 'size': str(self.size), 'level': str(self.level), 'label': str(self.label)}
