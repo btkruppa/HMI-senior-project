@@ -1,11 +1,49 @@
 <!DOCTYPE html>
+<script src='static/fullcalendar/lib/moment.min.js'></script>
+<link type="text/css" rel=StyleSheet href = "static/planner/planner.css">
+<script>
+$(document).ready(function(){
 
-<!DOCTYPE HTML>
+$.ajax({
+  dataType: "json",
+  url: config.server + "events.json",
+  method: "GET",
+  cache: false,
+    success: function(events){
+      window.stuff = events;
+      var screenPage = "";
+      for (var k = 0; k < events.length; k++){
+        if(events[k].type = "text"){
+          $("#screen1").append("<div id = \"item" + k + "\"></div>");
+          $("#item"+k).css("border", events[k].border);
+          $("#item"+k).css("color", events[k].color);
+          $("#item"+k).text(events[k].title);
+        }
+        else if(events[k].type = "button"){
+          $("#screen1").append("<button type=\"button\" onclick=\"alert('Hello world!')\" id = \"item" + k + "\">"+ events[k].label + "</button>");
+        }
+        $("#item"+k).css("position", "absolute");
+        $("#item"+k).css("left", events[k].left);
+        $("#item"+k).css("top", events[k].top);
+      }
+      window.screens = screenPage
+
+    //  $("#screen1").text(screenPage);
+  }
+  });
+})
+
+</script>
+
+<div id = "screen1"></div>
+
+
+<!--<!DOCTYPE HTML>
 <html>
-<head>
+<head>-->
 <!--<style>
 #div1 {width:350px;height:70px;padding:10px;border:1px solid #aaaaaa;}
-</style>-->
+</style>
 <style>
 #div1 {width:350px;height:170px;padding:10px;border:1px solid #aaaaaa;}
 </style>
@@ -84,7 +122,7 @@ function drop(ev) {
 </body>
 </html>
 
-
+-->
 <!--<html lang="en">
   <head>
     <meta charset="utf-8">

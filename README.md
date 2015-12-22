@@ -1,5 +1,16 @@
-# duetoday
-#### (Student App)
+# HMI senior project
+
+#Goals of this project
+#1. System for user to add, edit, and delete elements on a screen
+#2. System for screens to be saved and recalled
+#3. Communication between elements on screen and PLCs using Modbus TCP/IP
+
+#fields that an element on screen needs to hold
+#1. read/write for PLCs
+#2. aesthetics of element (color, size, shape, location on screen, )
+#3. 
+
+
 
 ## To Get the Code Locally
 Download and Install git for windows:
@@ -8,7 +19,7 @@ Select "Use in Windows Command Prompt" (the second option) when prompted
 
 1. Open a command prompt window
 2. Run ```cd C:\Users\%username%\Desktop``` to change to your desktop directory
-3. Run ```git clone https://github.com/cptr435/duetoday``` to get a copy of all the files
+3. Run ```git clone https://github.com/btkruppa/HMI-senior-project``` to get a copy of all the files
 
 
 ## Working with the Files
