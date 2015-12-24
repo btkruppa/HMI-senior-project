@@ -183,22 +183,39 @@ function getFeeds(feed_id){
 $(document).ready(function(){
   var id = getIdent();
   // Update the select box whenever the start date is changed
-  $("#start").on("change", updateSelect);
+  /*$("#start").on("change", updateSelect);
   $("#start").on("dateChange",updateSelect);
 
   // Show/hide the end date box based on if all day is checked
-  $("#AllDayEvent").on("change", updateAllDay);
+  $("#AllDayEvent").on("change", updateAllDay);*/
 
   if (id != undefined){
     $.ajax({
       dataType: "json",
-      url: config.server + "/item/" + getIdent(),
+      url: config.server + "events.json",
+      method: "GET",
       cache: false,
         success:function(item){
           window.items = item;
-            $("#title").val(item.item.title);
-            $("#left").val(item.item.left);
-            $("#start").val(moment(item.item.start).format("MM-DD-YYYY HH:mm:ss"));
+            $("#pageTitle").html("Edit Element");
+            $("#title").val(item[id].title);
+            $("#left").val(item[id].left);
+            $("#top").val(item[id].top);
+            $("#left").val(item[id].left);
+            $("#type").val(item[id].type);
+            $("#border").val(item[id].border);
+            $("#color").val(item[id].color);
+            $("#level").val(item[id].level);
+
+            //this will be needed once the screen feature, similar to old way
+            //of feeds
+            //getScreens(item.screen_id);
+            //$("#screen").val(item[id].screen_id);
+
+
+
+            //old code
+            /*$("#start").val(moment(item.item.start).format("MM-DD-YYYY HH:mm:ss"));
             $("#end").val(moment(item.item.end).format("MM-DD-YYYY HH:mm:ss"));
             $("#descrip").val(item.item.description);
             $("#pageTitle").html("Edit Element");
@@ -216,8 +233,10 @@ $(document).ready(function(){
             $("#AllDayEvent").prop('checked', allDay);
             loadCalendar();
             updateSelect();
+
+
             getFeeds(item.item.feed_id);
-            updateAllDay();
+            updateAllDay();*/
         }
     });
   }
@@ -297,16 +316,20 @@ $(document).ready(function(){
   <div class="row">
     <div class="large-3 columns">
       <label>Type
+        <select id = "screen">
+          <option value="screen1">screen1</option>
+          <option value="screen2">screen2</option>
+          <option value="screen3">screen3</option>
+        </select>
+      </label>
+    </div>
+    <div class="large-3 columns">
+      <label>Type
         <select id = "type">
           <option value="button">Button</option>
           <option value="text">Text</option>
           <option value="img">Image</option>
         </select>
-      </label>
-    </div>
-    <div class="large-3 columns">
-      <label>Label
-        <input type="text" placeholder="Label" id = "label"/>
       </label>
     </div>
     <div class="large-3 columns">
