@@ -23,6 +23,8 @@ $.ajax({
         $("#item"+k).css("position", "absolute");
         $("#item"+k).css("left", events[k].left);
         $("#item"+k).css("top", events[k].top);
+        $("#item"+k).css("width", events[k].width + events[k].unit3);
+        $("#item"+k).css("height", events[k].height + events[k].unit4);
       }
 
     //  $("#screen1").text(screenPage);

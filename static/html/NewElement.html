@@ -206,6 +206,13 @@ $(document).ready(function(){
             $("#border").val(item[id].border);
             $("#color").val(item[id].color);
             $("#level").val(item[id].level);
+            $("#height").val(item[id].height);
+            $("#width").val(item[id].width);
+            $("#unit1").val(item[id].unit1);
+            $("#unit2").val(item[id].unit2);
+            $("#unit3").val(item[id].unit3);
+            $("#unit4").val(item[id].unit4);
+
 
             //this will be needed once the screen feature, similar to old way
             //of feeds
@@ -300,16 +307,61 @@ $(document).ready(function(){
   </div>
   <div class="row">
     <div class="large-1 columns">
-        Left Margin:
+        Left Margin
     </div>
-    <div class="large-5 columns">
+    <div class="large-1 columns">
         <input type="text" placeholder="left margin" id = "left"/>
+    </div>
+    <div class="large-1 columns">
+      <select id = "unit1">
+        <option value="px">px</option>
+        <option value="%">%</option>
+        <option value="pt">pt</option>
+        <option value="in">in</option>
+      </select>
     </div>
     <div class="large-1 columns">
         Top Margin
     </div>
-    <div class="large-5 columns">
+    <div class="large-1 columns">
         <input type="text" placeholder="top margin" id = "top"/>
+    </div>
+    <div class="large-1 columns">
+      <select id = "unit2">
+        <option value="px">px</option>
+        <option value="%">%</option>
+        <option value="pt">pt</option>
+        <option value="in">in</option>
+      </select>
+    </div>
+
+    <div class="large-1 columns">
+        Element Width:
+    </div>
+    <div class="large-1 columns">
+        <input type="text" placeholder="This can be left empty for auto" id = "width"/>
+    </div>
+    <div class="large-1 columns">
+      <select id = "unit3">
+        <option value="px">px</option>
+        <option value="%">%</option>
+        <option value="pt">pt</option>
+        <option value="in">in</option>
+      </select>
+    </div>
+    <div class="large-1 columns" style="vertical-align:middle;">
+        Element Height:
+    </div>
+    <div class="large-1 columns">
+        <input type="text" placeholder="This can be left empty for auto" id = "height"/>
+    </div>
+    <div class="large-1 columns">
+      <select id = "unit4">
+        <option value="px">px</option>
+        <option value="%">%</option>
+        <option value="pt">pt</option>
+        <option value="in">in</option>
+      </select>
     </div>
   </div>
 

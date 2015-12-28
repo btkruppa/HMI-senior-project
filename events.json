@@ -2,15 +2,21 @@
   {
     "border": "solid",
     "color": "black",
+    "height": "20",
     "id": "1",
-    "screen_id": "1",
     "left": "10%",
     "level": "7",
     "plc": "write",
+    "screen_id": "1",
     "size": "null",
     "title": "button 1",
     "top": "10%",
-    "type": "button"
+    "type": "button",
+    "unit1": "%",
+    "unit2": "%",
+    "unit3": "%",
+    "unit4": "%",
+    "width": "20"
   },
   {
     "screen_id": "1",
