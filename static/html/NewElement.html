@@ -1,5 +1,6 @@
-<script src='static/fullcalendar/lib/moment.min.js'></script>
-<script type="text/javascript" src="static/datetimepicker/foundation_calendar.js"></script>
+<!DOCTYPE html>
+<!--script src='static/fullcalendar/lib/moment.min.js'></script>
+<script type="text/javascript" src="static/datetimepicker/foundation_calendar.js"></script>-->
 <style>
 #EndDateRow { display: none; }
 </style>
@@ -17,7 +18,7 @@ deleted = false;
 // Adds a new item
 function addItem(feed_id, title, description, left, start, end, repeat) {
     $.ajax({
-        url: config.server+"/item",
+        url: config.server+"trial.json",
         method: "PUT",
         data: {"feed_id": feed_id, "title": title, "description": description, "left": left, "start": start, "end": end, "repeat": repeat},
         cache: false,
@@ -115,7 +116,8 @@ function week_of_month(date) {
 }
 
 function updateSelect(){
-  var start = moment($("#start").val())
+  var type = $("#type").val();
+  var start = moment($("#start").val());
   var monthly1 = "Monthly (every "+ String(week_of_month(start))+ " "+start.format('dddd')+")";
   var monthly2 = "Monthly (on day " + String(start.date()) + ")";
 
@@ -137,9 +139,9 @@ function updateAllDay() {
 
 // We want to do this after we set the initial values, so we've moved this here from
 // foundation_calendar.js
-function loadCalendar() {
+/*function loadCalendar() {
     $.fcdp.init();
-}
+}*/
 
 // Error if the feed wasn't found
 function feedNotFound() {
@@ -248,16 +250,16 @@ $(document).ready(function(){
     });
   }
    else{
-      $("#title").html();
-      $("#descrip").val();
+      /*$("#title").html();
+      $("#descrip").val();*/
       $("#pageTitle").html("New Element");
 
       // Don't show the delete button when creating a new feed
       $("form input[value=Delete]").hide();
 
       // Initialize the date-time picker
-      loadCalendar();
-      updateSelect();
+      /*loadCalendar();
+      updateSelect();*/
       getFeeds();
     }
 
@@ -367,7 +369,7 @@ $(document).ready(function(){
 
   <div class="row">
     <div class="large-3 columns">
-      <label>Type
+      <label>Screen
         <select id = "screen">
           <option value="screen1">screen1</option>
           <option value="screen2">screen2</option>
@@ -444,61 +446,6 @@ $(document).ready(function(){
        </label>
      </div>
    </div>
-
-<!--
-  <div class="row">
-    <div class="large-2 small-4 columns">
-      <label>Start Date</label>
-    </div>
-    <div class="large-10 small-12 columns">
-      <input type="text" placeholder="Choose Start" data-date-time id = "start">
-    </div>
-  </div>
-  <div class="row">
-    <div class="large-2 small-4 columns">
-      <input id="AllDayEvent" type="checkbox" checked="checked"><label for="AllDayEvent">All Day Event</label>
-    </div>
-  </div>
-  <div class="row" id="EndDateRow">
-    <div class="large-2 small-4 columns">
-      <label>End Date</label>
-    </div>
-    <div class="large-10 small-12 columns">
-      <input type="text" placeholder="Choose End" data-date-time id = "end" />
-    </div>
-  </div>
-
-
-  <div class="row">
-    <div class="large-6 columns">
-      <label>Repeat
-        <select id = "repeat">
-          <option value="Once">One-time event</option>
-          <option value="Daily">Daily</option>
-          <option value="Weekday">Every weekday (Mon-Fri)</option>
-          <option value="Weekly">Weekly</option>
-          <option value="Alternateweekly">Every 2 weeks</option>
-          <option value="Monthly" id = "monthly1"></option/>
-          <option value="Daymonthly" id = "monthly2"></option>
-          <option value="Yearly">Yearly</option>
-        </select>
-      </label>
-      <label>Feed
-        <select id = "feeds">
-
-        </select>
-      </label>
-    </div>
-   </div>
-
-  <div class="row">
-    <div class="large-12 columns">
-      <label>Notes
-        <textarea placeholder="Enter Description" id = "descrip"></textarea>
-      </label>
-    </div>
-  </div>
--->
   <div class="row">
     <div class="large-6 small-6 columns">
       <input class="button" type="submit" value="Ok"/>

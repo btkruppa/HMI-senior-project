@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <script>
+
+
 $(document).ready(function(){
 
 $.ajax({
@@ -9,8 +11,10 @@ $.ajax({
   cache: false,
     success: function(events){
       window.items = events;
+      var id = 0;
       var screenPage = "";
       for (var k = 0; k < events.length; k++){
+        id = events[k].id;
         if(events[k].type == "text"){
           $("#screen1").append("<div id = \"item" + k + "\"></div>");
           $("#item"+k).css("border", events[k].border);
@@ -20,18 +24,37 @@ $.ajax({
         else if(events[k].type == "button"){
           $("#screen1").append("<button type=\"button\" onclick=\"alert('Hello world!')\" id = \"item" + k + "\">"+ events[k].title + "</button>");
         }
+        else if(events[k].type == "img"){
+          $("#screen1").append("<img src=\"" + events[k].image + "\" id = \"item" + k + "\">")
+        }
         $("#item"+k).css("position", "absolute");
-        $("#item"+k).css("left", events[k].left);
-        $("#item"+k).css("top", events[k].top);
+        $("#item"+k).css("left", events[k].left + events[k].unit1);
+        $("#item"+k).css("top", events[k].top + events[k].unit2);
         $("#item"+k).css("width", events[k].width + events[k].unit3);
         $("#item"+k).css("height", events[k].height + events[k].unit4);
+        $("#item"+k).mousedown(function(event) {
+          switch (event.which) {
+              case 1:
+                  //alert('Left Mouse button pressed.');
+                  break;
+              case 2:
+                  //alert('Middle Mouse button pressed.');
+                  break;
+              case 3:
+                  //lert('Right Mouse button pressed.');
+                  window.location.href = "#/EditElement/"+ id;
+                  break;
+              default:
+                  alert('You have a strange Mouse!');
+          }
+        });
       }
+
 
     //  $("#screen1").text(screenPage);
   }
   });
 });
-
 </script>
 
 <div id = "screen1"></div>

@@ -8,7 +8,11 @@
 “border”: this is for text only, dotted, dashed, solid, double, groove, ridge, inset, outset
 “plc”: this can be read or write
 “color”: selected from color wheel, ideally, for now select from standard colors
-“size”:
+“width": width of element
+"height": height of element
+"unit1": selected unit for left margin
+"unit2": selected unit for top margin
+"unit3": selected unit for width
+"unit4": selected unit for height
 “level”: minimum access level to view this element
-“label”: if not null then will label the text or button
- 
+“label”: if not null then it will be the label the text or button

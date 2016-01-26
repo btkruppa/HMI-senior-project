@@ -1,5 +1,5 @@
 
 var config = {
-  title: "Due Today",
+  title: "Key Technology HMI",
   server: ""
 }
