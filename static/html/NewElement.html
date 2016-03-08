@@ -184,6 +184,7 @@ function getFeeds(feed_id){
 
 $(document).ready(function(){
   var id = getIdent();
+  var id = id.substring(4,6);
   // Update the select box whenever the start date is changed
   /*$("#start").on("change", updateSelect);
   $("#start").on("dateChange",updateSelect);
@@ -199,22 +200,25 @@ $(document).ready(function(){
       cache: false,
         success:function(item){
           window.items = item;
-            $("#pageTitle").html("Edit Element");
-            $("#title").val(item[id].title);
-            $("#left").val(item[id].left);
-            $("#top").val(item[id].top);
-            $("#left").val(item[id].left);
-            $("#type").val(item[id].type);
-            $("#border").val(item[id].border);
-            $("#color").val(item[id].color);
-            $("#level").val(item[id].level);
-            $("#height").val(item[id].height);
-            $("#width").val(item[id].width);
-            $("#unit1").val(item[id].unit1);
-            $("#unit2").val(item[id].unit2);
-            $("#unit3").val(item[id].unit3);
-            $("#unit4").val(item[id].unit4);
-
+          for (var k = 0; k < item.length; k++){
+            if(id == item[k].id){
+              $("#pageTitle").html("Edit Element");
+              $("#title").val(item[k].title);
+              $("#left").val(item[k].left);
+              $("#top").val(item[k].top);
+              $("#left").val(item[k].left);
+              $("#type").val(item[k].type);
+              $("#border").val(item[k].border);
+              $("#color").val(item[k].color);
+              $("#level").val(item[k].level);
+              $("#height").val(item[k].height);
+              $("#width").val(item[k].width);
+              $("#unit1").val(item[k].unit1);
+              $("#unit2").val(item[k].unit2);
+              $("#unit3").val(item[k].unit3);
+              $("#unit4").val(item[k].unit4);
+            }
+          }
 
             //this will be needed once the screen feature, similar to old way
             //of feeds

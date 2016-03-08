@@ -11,28 +11,28 @@ $.ajax({
   cache: false,
     success: function(events){
       window.items = events;
-      var id = 0;
       var screenPage = "";
       for (var k = 0; k < events.length; k++){
-        id = events[k].id;
+        id = events[k].id
         if(events[k].type == "text"){
-          $("#screen1").append("<div id = \"item" + k + "\"></div>");
-          $("#item"+k).css("border", events[k].border);
-          $("#item"+k).css("color", events[k].color);
-          $("#item"+k).text(events[k].title);
+          $("#screen1").append("<div id = \"item" + id + "\"></div>");
+          $("#item"+id).css("border", events[k].border);
+          $("#item"+id).css("color", events[k].color);
+          $("#item"+id).text(events[k].title);
         }
         else if(events[k].type == "button"){
-          $("#screen1").append("<button type=\"button\" onclick=\"alert('Hello world!')\" id = \"item" + k + "\">"+ events[k].title + "</button>");
+          $("#screen1").append("<button type=\"button\" onclick=\"alert('Hello world!')\" id = \"item" + id + "\">"+ events[k].title + "</button>");
         }
         else if(events[k].type == "img"){
-          $("#screen1").append("<img src=\"" + events[k].image + "\" id = \"item" + k + "\">")
+          $("#screen1").append("<img src=\"" + events[k].image + "\" id = \"item" + id + "\">")
         }
-        $("#item"+k).css("position", "absolute");
-        $("#item"+k).css("left", events[k].left + events[k].unit1);
-        $("#item"+k).css("top", events[k].top + events[k].unit2);
-        $("#item"+k).css("width", events[k].width + events[k].unit3);
-        $("#item"+k).css("height", events[k].height + events[k].unit4);
-        $("#item"+k).mousedown(function(event) {
+        $("#item"+id).css("position", "absolute");
+        $("#item"+id).css("left", events[k].left + events[k].unit1);
+        $("#item"+id).css("top", events[k].top + events[k].unit2);
+        $("#item"+id).css("width", events[k].width + events[k].unit3);
+        $("#item"+id).css("height", events[k].height + events[k].unit4);
+        $("#item"+id).mousedown(function(event) {
+          window.testing = $(this);
           switch (event.which) {
               case 1:
                   //alert('Left Mouse button pressed.');
@@ -42,7 +42,7 @@ $.ajax({
                   break;
               case 3:
                   //lert('Right Mouse button pressed.');
-                  window.location.href = "#/EditElement/"+ id;
+                  window.location.href = "#/EditElement/"+ this.id;
                   break;
               default:
                   alert('You have a strange Mouse!');

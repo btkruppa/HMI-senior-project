@@ -19,7 +19,7 @@
   },
   {
     "height": "15",
-    "id": "9",
+    "id": "12",
     "left": "40",
     "level": "7",
     "plc": "write",
@@ -109,7 +109,7 @@
     "type": "text",
     "border": "ridge",
     "plc": "read",
-    "color": "black",
+    "color": "red",
     "size": "null",
     "level": "7",
     "title": "red text, ridge border",
