@@ -4,9 +4,13 @@
 
 $(document).ready(function(){
 
+var plcReadId = [];
+var plcReadCoil = []
+var readCount = 0;
+
 $.ajax({
   dataType: "json",
-  url: config.server + "events.json",
+  url: config.server + "trial.json",
   method: "GET",
   cache: false,
     success: function(events){
@@ -25,6 +29,11 @@ $.ajax({
         }
         else if(events[k].type == "img"){
           $("#screen1").append("<img src=\"" + events[k].image + "\" id = \"item" + id + "\">")
+        }
+        if(events[k].plc == "read"){
+          plcReadId[readCount] = events[k].id
+          plcReadCoil[readCount] = events[k].coil;
+          readCount++
         }
         $("#item"+id).css("position", "absolute");
         $("#item"+id).css("left", events[k].left + events[k].unit1);
@@ -54,6 +63,23 @@ $.ajax({
     //  $("#screen1").text(screenPage);
   }
   });
+  setInterval(function(){
+  for(var i = 0; i<readCount; i++){
+    var coil = plcReadCoil[i]
+    window.coiltest = plcReadCoil;
+    $.ajax({
+      dataType: "json",
+      url: config.server + "/coil/" + coil +"/" + i,
+      method: "GET",
+      cache: false,
+        success: function(events){
+          window.coils = events;
+          $("#item"+plcReadId[events.id]).text(events.coil);
+        }
+      })
+  }
+},100)
+
 });
 </script>
 

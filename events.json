@@ -41,6 +41,7 @@
     "type": "text",
     "border": "groove",
     "plc": "read",
+    "coil": "1",
     "color": "black",
     "size": "null",
     "level": "7",

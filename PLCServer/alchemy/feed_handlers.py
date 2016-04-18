@@ -3,64 +3,78 @@ import logging
 import requests
 import json
 import re
+import socket
+import struct
+import time
+
 from dateutil.relativedelta import relativedelta
 from alchemy.setup import *
 from alchemy.base_handlers import BaseHandler
 
 logger = logging.getLogger("pyserver")
 
-def CreateRepeatingItems(item, repeat):
-    endoftime = dTime("2017-02-01") # CHANGE THIS DATE TO SOMETIME, FAR IN THE FUTURE
-    def newItem(t):
-        i = Item(feed_id=item.feed_id, title=item.title, creator=item.creator, description=item.description, location=item.location, repeat=item.repeat, start=(item.start+t), end=(item.end+t))
-        i = addOrUpdate(i)
+slaveID = 11
+unitId = 1
+TCP_IP = '192.168.0.211'
+TCP_PORT = 502
+BUFFER_SIZE = 41
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print "connecting"
+sock.connect((TCP_IP, TCP_PORT))
+print "success"
 
-    if repeat == "Yearly": # every year on the same date
-        p = 1
-        t = relativedelta(years=p)
-        while item.start + t <= endoftime:
-            newItem(t)
-            p = p+1
-            t = relativedelta(years=p)
-        return
+def ReadCoil(coil):
 
-    for d in range(1, (endoftime - item.start).days+1):
-        t = datetime.timedelta(days=d)
-        if repeat == "Daily": # every day
-            newItem(t)
-        elif repeat == "Weekday": # every weekday
-            weekday = (item.start+t).weekday()
-            if weekday >= 0 and weekday <= 4:
-                newItem(t)
-        elif repeat == "Weekly": # every week
-            if t.days%7 == 0:
-                newItem(t)
-        elif repeat == "Alternateweekly": # every other week
-            if t.days%14 == 0:
-                newItem(t)
-        elif repeat == "Monthly": # first same day of the week every month
-            weekday = (item.start+t).weekday()
-            day = (item.start + t).day
-            if weekday == item.start.weekday() and day > item.start.day-7 and day < item.start.day+7:
-                newItem(t)
-        elif repeat == "Daymonthly": # same date of every month
-            day = (item.start + t).day
-            if day == item.start.day:
-                newItem(t)
 
-def DeleteRepeatingItems(item):
-    for i in query_by_field(Item, "feed_id", item.feed_id):
-        if i.title == item.title and i.description == item.description and i.location == item.location and i.repeat == item.repeat and i.creator == item.creator and (i.updated_at - item.updated_at).seconds < 5:
-            if i != item:
-                logger.debug(i.to_json())
-                delete_thing(i)
+    '''Check to make sure the end coild comes after the start coil'''
+    start = coil
+    end = coil
+    coilId1 = start
+    coilId2 = 0
+    length1 = end - start + 1
+    length2 = 0
+    '''If the coil is located after 255 it takes 2 bytes'''
+    while coilId1 > 255:
+        coilId1 = coilId1 - 256
+        coilId2 = coilId2 + 1
+    '''If it is requesting more that 255 coils at a time it takes 2 bytes'''
+    while length1 > 255:
+        length1 = length1 - 256
+        length2 = length2 + 1
 
-class ListUserFeedsHandler(BaseHandler):
+    req = struct.pack('12B', 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, int(unitId), 0x01, int(coilId2), int(coilId1), int(length2), int(length1))
+    sock.send(req)
+    '''a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12 = struct.unpack('12B',req)
+    print("TX: ", hex(a1), hex(a2), hex(a3), hex(a4), hex(a5), hex(a6), hex(a7), hex(a8), hex(a9), hex(a10), hex(a11), hex(a12))'''
+    rec = sock.recv(BUFFER_SIZE)
+    numBytes = len(rec)
+
+    '''this is to sort the information sent back into the bits of the coils read'''
+    a = []
+    b = []
+    for x in range(9, numBytes):
+        a = struct.unpack('B', rec[x])
+        b.append('{0:08b}'.format(int(a[0])))
+
+    print(b)
+    '''this is to output the state of each coil read '''
+    for x in range(0, len(b)):
+        for i in range(0, 8):
+            if start+i+8*x <= end:
+                print("Coil #{} is a {}".format(start+i+8*x, b[x][7-i]))
+                return b[x][7-i]
+
+
+    '''print("RX: ",  b, len(b))'''
+
+class ReadCoilHandler(BaseHandler):
     @tornado.web.authenticated
-    def get(self):
-        user = self.current_user
-        feeds = query_by_field(Feed, "owner", user.wwuid)
-        self.write(json.dumps([f.to_json() for f in feeds]))
+    def get(self, coil, id):
+        print(coil)
+        coilWrite = ReadCoil(int(coil))
+        print("it works")
+
+        self.write(json.dumps({'coil':coilWrite, 'id':id}))
 
 class FeedHandler(BaseHandler):
     def get(self, id):
@@ -115,117 +129,3 @@ class FeedHandler(BaseHandler):
             delete_thing(item)
         delete_thing(feed)
         self.write(json.dumps("success"))
-
-
-class ItemHandler(BaseHandler):
-    def get(self, id):
-        item = query_by_id(Item, id)
-        if not item:
-            return self.write({'error':'item does not exist'})
-        self.write({'item':item.to_json()})
-
-    @tornado.web.authenticated
-    def put(self):
-        user = self.current_user
-        feed_id = self.get_argument("feed_id", None)
-        feed = query_by_id(Feed, feed_id)
-        if not feed:
-            return self.write({'error':'feed does not exist'})
-        if feed.owner != user.wwuid and user.wwuid not in feed.administrators.split(","):
-            return self.write({'error':'insufficient permissions'})
-        title = self.get_argument("title", None)
-        start = dTime(self.get_argument("start", None))
-        end = dTime(self.get_argument("end", None))
-        user = self.current_user
-        if not title or not start or not end:
-            return self.write({'error':'you must give us a title and a start and an end'})
-        description = self.get_argument("description", None)
-        location = self.get_argument("location", None)
-        repeat = self.get_argument("repeat", None)
-        item = Item(feed_id=feed_id,title=title,creator=user.wwuid,description=description,location=location,repeat=repeat,start=start,end=end)
-        item = addOrUpdate(item)
-
-        repeat = self.get_argument("repeat", None)
-        if repeat and repeat != "Once":
-            CreateRepeatingItems(item, repeat)
-
-        self.write({'item': item.to_json()})
-
-    @tornado.web.authenticated
-    def post(self, id):
-        user = self.current_user
-        item = query_by_id(Item, id)
-        if not item:
-            return self.write({'error':'item does not exist'})
-        feed_id = self.get_argument("feed_id", None)
-        feed = query_by_id(Feed, feed_id)
-        if not feed:
-            return self.write({'error':'feed does not exist'})
-        if feed.owner != user.wwuid and user.wwuid not in feed.administrators.split(","):
-            return self.write({'error':'insufficient permissions'})
-        title = self.get_argument("title", None)
-        start = dTime(self.get_argument("start", None))
-        end = dTime(self.get_argument("end", None))
-        user = self.current_user
-        if not title or not start or not end:
-            return self.write({'error':'you must give us a title and a start and an end'})
-        description = self.get_argument("description", None)
-        location = self.get_argument("location", None)
-        repeat = self.get_argument("repeat", None)
-
-        DeleteRepeatingItems(item)
-
-        item.feed_id = feed_id
-        item.title = title
-        item.description = description
-        item.location = location
-        item.repeat = repeat
-        item.start = start
-        item.end = end
-        item = addOrUpdate(item)
-
-        repeat = self.get_argument("repeat", None)
-        if repeat and repeat != "Once":
-            CreateRepeatingItems(item, repeat)
-
-        self.write({'item': item.to_json()})
-
-    @tornado.web.authenticated
-    def delete(self, id):
-        user = self.current_user
-        item = query_by_id(Item, id)
-        if not item:
-            return self.write({'error':'item does not exist'})
-        feed = query_by_id(Feed, item.feed_id)
-        if not feed:
-            return self.write({'error':'feed does not exist'})
-        if feed.owner != user.wwuid and user.wwuid not in feed.administrators.split(","):
-            return self.write({'error':'insufficient permissions'})
-        DeleteRepeatingItems(item)
-        delete_thing(item)
-        self.write(json.dumps("success"))
-
-class ListFeedItemsHandler(BaseHandler):
-    def get(self, id):
-        feed = query_by_id(Feed, id)
-        if not feed:
-            return self.write({'error':'feed does not exist'})
-        items = query_by_field(Item, "feed_id", id)
-        self.write(json.dumps([i.to_json() for i in items]))
-
-class ListFeedItemsByDateTimeHandler(BaseHandler):
-    def get(self, id, start, end):
-        start = dTime(start)
-        end = dTime(end)
-        feed = query_by_id(Feed, id)
-        if not feed:
-            return self.write({'error':'feed does not exist'})
-        self.write(json.dumps([i.to_json() for i in query_items_by_datetime(id,start,end)]))
-
-class ListUserItemsByDateTimeHandler(BaseHandler):
-    @tornado.web.authenticated
-    def get(self, start, end):
-        user = self.current_user
-        start = dTime(start)
-        end = dTime(end)
-        self.write(json.dumps([i.to_json() for i in query_user_items_by_datetime(user.wwuid,start,end)]))
