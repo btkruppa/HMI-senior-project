@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <script>
 
+function writeRegister(register,value){
+  window.check = register
+  $.ajax({
+    dataType: "json",
+    url: config.server + "/presetRegister/" + register + "/" + value,
+    method: "GET",
+    cache: false,
+      success: function(events){
+        window.write = events
+      }
+  })
+}
 
 $(document).ready(function(){
 
-var plcReadId = [];
+var plcReadCoilId = []
 var plcReadCoil = []
-var readCount = 0;
+var readCoilCount = 0
+var plcReadRegisterId = []
+var plcReadRegister = []
+var readRegisterCount = 0
+
+
 
 $.ajax({
   dataType: "json",
@@ -25,15 +42,22 @@ $.ajax({
           $("#item"+id).text(events[k].title);
         }
         else if(events[k].type == "button"){
-          $("#screen1").append("<button type=\"button\" onclick=\"alert('Hello world!')\" id = \"item" + id + "\">"+ events[k].title + "</button>");
+          if(events[k].plc == "writeRegister"){
+            $("#screen1").append("<button type=\"button\" onclick=\"writeRegister("+events[k].register+","+events[k].value+")\" id = \"item" + id + "\">"+ events[k].title + "</button>");
+          }
         }
         else if(events[k].type == "img"){
           $("#screen1").append("<img src=\"" + events[k].image + "\" id = \"item" + id + "\">")
         }
-        if(events[k].plc == "read"){
-          plcReadId[readCount] = events[k].id
-          plcReadCoil[readCount] = events[k].coil;
-          readCount++
+        if(events[k].plc == "readCoil"){
+          plcReadCoilId[readCoilCount] = events[k].id
+          plcReadCoil[readCoilCount] = events[k].coil
+          readCoilCount++
+        }
+        if(events[k].plc == "readRegister"){
+          plcReadRegisterId[readRegisterCount] = events[k].id
+          plcReadRegister[readRegisterCount] = events[k].register;
+          readRegisterCount++
         }
         $("#item"+id).css("position", "absolute");
         $("#item"+id).css("left", events[k].left + events[k].unit1);
@@ -64,7 +88,8 @@ $.ajax({
   }
   });
   setInterval(function(){
-  for(var i = 0; i<readCount; i++){
+  //update reading coils
+  for(var i = 0; i<readCoilCount; i++){
     var coil = plcReadCoil[i]
     window.coiltest = plcReadCoil;
     $.ajax({
@@ -74,11 +99,29 @@ $.ajax({
       cache: false,
         success: function(events){
           window.coils = events;
-          $("#item"+plcReadId[events.id]).text(events.coil);
+          $("#item"+plcReadCoilId[events.id]).text(events.coil);
         }
       })
   }
-},100)
+  //update reading registers
+  for(var j = 0; j<readRegisterCount; j++){
+    var register = plcReadRegister[j]
+    window.registertest = plcReadRegister;
+    $.ajax({
+      dataType: "json",
+      url: config.server + "/register/" + register +"/" + j,
+      method: "GET",
+      cache: false,
+        success: function(events){
+          window.registers = events;
+          $("#item"+plcReadRegisterId[events.id]).text(events.register);
+        }
+      })
+  }
+},500)
+
+
+
 
 });
 </script>

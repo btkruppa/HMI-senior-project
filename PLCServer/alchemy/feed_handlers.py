@@ -23,9 +23,55 @@ print "connecting"
 sock.connect((TCP_IP, TCP_PORT))
 print "success"
 
+def presetMultipleRegisters(start, val):
+    print("\nWriting registers...")
+    '''if end < start:
+        end = start'''
+    end = start
+    coilId1 = start
+    coilId2 = 0
+    length1 = end - start + 1
+    length2 = 0
+    val2 = 0
+
+    while coilId1 > 255:
+        coilId1 = coilId1 - 256
+        coilId2 = coilId2 + 1
+
+    while length1 > 255:
+        length1 = length1 - 256
+        length2 = length2 + 1
+
+    while val > 255:
+        val2 = val2 +1
+        val = val-256
+
+    req = struct.pack('15B', 0x00, 0x00, 0x00, 0x00, 0x00, 0x09, int(unitId), 0x10, int(coilId2), int(coilId1), int(length2), int(length1), 0x02, val2, val)
+    sock.send(req)
+    '''a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12 = struct.unpack('12B',req)
+    print("TX: ", hex(a1), hex(a2), hex(a3), hex(a4), hex(a5), hex(a6), hex(a7), hex(a8), hex(a9), hex(a10), hex(a11), hex(a12))'''
+    rec = sock.recv(BUFFER_SIZE)
+    numBytes = len(rec)
+    print("numBytes ", numBytes)
+
+    '''this is to sort the information sent back into the bits of the coils read'''
+    a = []
+    b = []
+    for x in range(0, numBytes):
+        a = struct.unpack('B', rec[x])
+        b.append(a)
+
+    print(b)
+    '''this is to output the state of each coil read
+    for x in range(0, len(b)):
+        for i in range(0, 8):
+            if start+i+8*x <= end:
+                print("Coil #{} is a {}".format(start+i+8*x, b[x][7-i]))
+
+    print("RX: ",  b, len(b))'''
+    return
+
 def ReadCoil(coil):
-
-
     '''Check to make sure the end coild comes after the start coil'''
     start = coil
     end = coil
@@ -56,25 +102,82 @@ def ReadCoil(coil):
         a = struct.unpack('B', rec[x])
         b.append('{0:08b}'.format(int(a[0])))
 
-    print(b)
+    '''print(b)'''
     '''this is to output the state of each coil read '''
     for x in range(0, len(b)):
         for i in range(0, 8):
             if start+i+8*x <= end:
-                print("Coil #{} is a {}".format(start+i+8*x, b[x][7-i]))
+                '''print("Coil #{} is a {}".format(start+i+8*x, b[x][7-i]))'''
                 return b[x][7-i]
 
 
     '''print("RX: ",  b, len(b))'''
 
+def readRegister(register):
+    print("\nReading registers...")
+    start = register
+    end = start
+    if end < start:
+        end = start
+    coilId1 = start
+    coilId2 = 0
+    length1 = end - start + 1
+    length2 = 0
+    while coilId1 > 255:
+        coilId1 = coilId1 - 256
+        coilId2 = coilId2 + 1
+
+    while length1 > 255:
+        length1 = length1 - 256
+        length2 = length2 + 1
+
+    req = struct.pack('12B', 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, int(unitId), 0x03, int(coilId2), int(coilId1), int(length2), int(length1))
+    sock.send(req)
+    '''a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12 = struct.unpack('12B',req)
+    print("TX: ", hex(a1), hex(a2), hex(a3), hex(a4), hex(a5), hex(a6), hex(a7), hex(a8), hex(a9), hex(a10), hex(a11), hex(a12))'''
+    rec = sock.recv(BUFFER_SIZE)
+    numBytes = len(rec)
+    print("numBytes ", numBytes)
+
+    '''this is to sort the information sent back into the bits of the coils read'''
+    a = []
+    b = []
+    for x in range(9, numBytes):
+        a = struct.unpack('B', rec[x])
+        b.append(a)
+    b = 256*b[0][0]+b[1][0]
+    print(b)
+    '''this is to output the state of each coil read '''
+    '''for x in range(0, len(b)):'''
+    '''print("register #{} is a {}".format(start+i+8*x, b[x][7-i]))'''
+
+    '''print("RX: ",  b, len(b))'''
+    return b
+
+
 class ReadCoilHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, coil, id):
-        print(coil)
-        coilWrite = ReadCoil(int(coil))
-        print("it works")
+        coilRead = ReadCoil(int(coil))
 
-        self.write(json.dumps({'coil':coilWrite, 'id':id}))
+        self.write(json.dumps({'coil':coilRead, 'id':id}))
+
+class ReadRegisterHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, register, id):
+        '''print(register)'''
+        registerRead = readRegister(25)
+        '''presetMultipleRegisters(25,550)'''
+
+        self.write(json.dumps({'register':registerRead, 'id':id}))
+        print("register read")
+
+class PresetRegisterHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, register, val):
+        print("its working")
+        presetMultipleRegisters(int(register), int(val))
+        self.write(json.dumps({'value':val}))
 
 class FeedHandler(BaseHandler):
     def get(self, id):

@@ -47,7 +47,7 @@ def readCoil(start, end):
 
 
 '''this is the function to set multiple registers '''
-def presetMultipleRegisters(start, end):
+def presetMultipleRegisters(start):
     print("\nWriting registers...")
     if end < start:
         end = start

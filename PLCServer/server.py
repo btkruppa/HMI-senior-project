@@ -24,6 +24,10 @@ class Application(tornado.web.Application):
         handlers = [
             (r"/coil", ReadCoilHandler),
             (r"/coil/(.*)/(.*)", ReadCoilHandler),
+            (r"/register", ReadRegisterHandler),
+            (r"/register/(.*)/(.*)", ReadRegisterHandler),
+            (r"/presetRegister", PresetRegisterHandler),
+            (r"/presetRegister/(.*)/(.*)", PresetRegisterHandler),
             (r"/feed", FeedHandler),
             (r"/feed/(.*)", FeedHandler),
             (r"/login", LoginHandler),
