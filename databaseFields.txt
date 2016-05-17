@@ -6,7 +6,7 @@
 "top": this is the position from the left edge of screen, can be in %, px, em, in …
 "type": this can be button, image, text
 “border”: this is for text only, dotted, dashed, solid, double, groove, ridge, inset, outset
-“plc”: this can be read or write
+“plc”: this can be readCoil, writeCoil, readRegister, writeRegister, or readContact
 “color”: selected from color wheel, ideally, for now select from standard colors
 “width": width of element
 "height": height of element
@@ -16,3 +16,7 @@
 "unit4": selected unit for height
 “level”: minimum access level to view this element
 “label”: if not null then it will be the label the text or button
+"value": value to write to coil or register
+"register": register address to read or write to
+"coil": coil address to read or write to
+"contact": contact address to read

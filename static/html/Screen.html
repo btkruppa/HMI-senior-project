@@ -22,6 +22,9 @@ var readCoilCount = 0
 var plcReadRegisterId = []
 var plcReadRegister = []
 var readRegisterCount = 0
+var plcReadContactId = []
+var plcReadContact = []
+var readContactCount = 0
 
 
 
@@ -58,6 +61,11 @@ $.ajax({
           plcReadRegisterId[readRegisterCount] = events[k].id
           plcReadRegister[readRegisterCount] = events[k].register;
           readRegisterCount++
+        }
+        if(events[k].plc == "readContact"){
+          plcReadContactId[readContactCount] = events[k].id
+          plcReadContact[readContactCount] = events[k].contact;
+          readContactCount++
         }
         $("#item"+id).css("position", "absolute");
         $("#item"+id).css("left", events[k].left + events[k].unit1);
@@ -115,6 +123,22 @@ $.ajax({
         success: function(events){
           window.registers = events;
           $("#item"+plcReadRegisterId[events.id]).text(events.register);
+        }
+      })
+  }
+  window.contacts = readContactCount
+  //update input contact
+  for(var i = 0; i<readContactCount; i++){
+    var contact = plcReadContact[i]
+    window.contacttest = plcReadContact;
+    $.ajax({
+      dataType: "json",
+      url: config.server + "/contact/" + contact +"/" + i,
+      method: "GET",
+      cache: false,
+        success: function(events){
+          window.contact = events;
+          $("#item"+plcReadContactId[events.id]).text(events.contact);
         }
       })
   }
