@@ -194,14 +194,12 @@ def readContact(contact):
     '''print("RX: ",  b, len(b))'''
 
 class ReadCoilHandler(BaseHandler):
-    @tornado.web.authenticated
     def get(self, coil, id):
         coilRead = ReadCoil(int(coil))
 
         self.write(json.dumps({'coil':coilRead, 'id':id}))
 
 class ReadContactHandler(BaseHandler):
-    @tornado.web.authenticated
     def get(self, contact, id):
         contactRead = readContact(int(contact))
         '''presetMultipleRegisters(25,550)'''
@@ -209,7 +207,6 @@ class ReadContactHandler(BaseHandler):
         self.write(json.dumps({'contact':contactRead, 'id':id}))
 
 class ReadRegisterHandler(BaseHandler):
-    @tornado.web.authenticated
     def get(self, register, id):
         registerRead = readRegister(int(register))
         '''presetMultipleRegisters(25,550)'''
@@ -217,32 +214,48 @@ class ReadRegisterHandler(BaseHandler):
         self.write(json.dumps({'register':registerRead, 'id':id}))
 
 class PresetRegisterHandler(BaseHandler):
-    @tornado.web.authenticated
     def get(self, register, val):
         presetMultipleRegisters(int(register), int(val))
         self.write(json.dumps({'value':val}))
+    # def post(self):
+    #     data = self.get_argument("data", None)
+    #     feed_id = self.get_argument("feed_id", None)
+    #     title = self.get_argument("title", None)
+    #     item = Item(data = data,feed_id = feed_id, title = title)
+    #     item = addOrUpdate(item)
+    #     self.write({})
+
+class ElementHandler(BaseHandler):
+    def post(self):
+        data = self.get_argument("data", None)
+        feed_id = self.get_argument("feed_id", None)
+        title = self.get_argument("title", None)
+        item = Item(data = data,feed_id = feed_id, title = title)
+        item = addOrUpdate(item)
+        self.write({})
 
 class FeedHandler(BaseHandler):
     def get(self, id):
-        feed = query_by_id(Feed, id)
-        if not feed:
+        #item = query_by_id(Item, id)
+        item = query_by_field(Item, "feed_id", id)
+        if not item:
             return self.write({'error':'feed does not exist'})
-        self.write({'feed':feed.to_json()})
 
-    @tornado.web.authenticated
+        self.write(json.dumps([i.to_json() for i in item]))
+        #self.write({'item':item.to_json()})
+
+
     def put(self):
         title = self.get_argument("title", None)
         description = self.get_argument("description", None)
         private = self.get_argument("private", True)
-        user = self.current_user
         if not title:
             return self.write({'error':'you must give us a title'})
         administrators = self.get_argument("administrators", None)
-        feed = Feed(title=title,owner=user.wwuid,administrators=administrators,description=description,private=private)
+        feed = Feed(title=title,administrators=administrators,description=description,private=private)
         feed = addOrUpdate(feed)
         self.write({'feed': feed.to_json()})
 
-    @tornado.web.authenticated
     def post(self, id):
         title = self.get_argument("title", None)
         description = self.get_argument("description", None)
@@ -263,7 +276,6 @@ class FeedHandler(BaseHandler):
         feed = addOrUpdate(feed)
         self.write({'feed': feed.to_json()})
 
-    @tornado.web.authenticated
     def delete(self, id):
         user = self.current_user
         feed = query_by_id(Feed, id)

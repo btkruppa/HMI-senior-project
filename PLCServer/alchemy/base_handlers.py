@@ -12,25 +12,25 @@ class BaseHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
 
-    def get_current_user(self):
+    '''def get_current_user(self):
         wwuid = self.get_secure_cookie("wwuid")
         user = query_user(str(wwuid))
-        return user
+        return user'''
 
 
-class VerifyHandler(BaseHandler):
+'''class VerifyHandler(BaseHandler):
     def get(self):
         user = self.current_user
         if user:
             self.write(str(user.wwuid))
         else:
-            self.write("Not logged in")
+            self.write("Not logged in")'''
 
 class IndexHandler(BaseHandler):
     def get(self):
         self.render("../../index.html")
 
-class LoginHandler(BaseHandler):
+'''class LoginHandler(BaseHandler):
     def get(self):
         self.write({'error': 'You must login to access that content'})
 
@@ -62,4 +62,4 @@ class LoginHandler(BaseHandler):
                 self.write({'error': str(e.message)})
         else:
             logger.error("LoginHandler: invalid post parameters")
-            self.write({'error':'invalid post parameters'})
+            self.write({'error':'invalid post parameters'})'''

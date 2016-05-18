@@ -5,7 +5,8 @@ var main = $("#main-content");
 var handlers = [
 	["/EditElement/.*", editHandler],
 	["/NewElement", editHandler],
-	["/EditFeed/.*", feedHandler],
+	["/EditFeed/.*", feed2Handler],
+	["/feed/.*", feedHandler],
 	["/NewFeed", feedHandler],
 	["/.*", pageHandler],
 	[".*", indexHandler]
@@ -66,4 +67,8 @@ function feedHandler(id) {
 		return id;
 	}
 	feedId = getID;
+}
+
+function feed2Handler(id) {
+	loader(main, "static/html/feed.html", function() {});
 }

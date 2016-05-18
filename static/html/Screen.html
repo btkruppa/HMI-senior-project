@@ -12,6 +12,17 @@ function writeRegister(register,value){
         window.write = events
       }
   })
+  $.ajax({
+    dataType: "json",
+    url: config.server + "/presetRegister",
+    method: "POST",
+    cache: false,
+    data: {"data": "testing","feed_id":"1"},
+      success: function(events){
+        window.write = events
+      }
+  })
+
 }
 
 $(document).ready(function(){
@@ -142,7 +153,7 @@ $.ajax({
         }
       })
   }
-},500)
+},2000)
 
 
 

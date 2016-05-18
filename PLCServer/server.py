@@ -32,7 +32,9 @@ class Application(tornado.web.Application):
             (r"/presetRegister/(.*)/(.*)", PresetRegisterHandler),
             (r"/feed", FeedHandler),
             (r"/feed/(.*)", FeedHandler),
-            (r"/login", LoginHandler),
+            (r"/element", ElementHandler),
+            (r"/element/(.*)", ElementHandler),
+            #(r"/login", LoginHandler),
             (r"/", IndexHandler),
             (r"/(.*)", tornado.web.StaticFileHandler, {'path': '../'}),
         ]
