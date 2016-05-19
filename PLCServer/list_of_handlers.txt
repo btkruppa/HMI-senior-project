@@ -5,6 +5,12 @@ Note: PUT methods do not require an ID in the URL path
 
 * indicates you must be logged in to use
 
+/element/[ELEMENT_ID]
+    -GET: info about specific element
+    -POST: send details about that element
+
+
+
 /login
     - POST: send (username, password)
 

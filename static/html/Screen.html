@@ -12,17 +12,6 @@ function writeRegister(register,value){
         window.write = events
       }
   })
-  $.ajax({
-    dataType: "json",
-    url: config.server + "/presetRegister",
-    method: "POST",
-    cache: false,
-    data: {"data": "testing","feed_id":"1"},
-      success: function(events){
-        window.write = events
-      }
-  })
-
 }
 
 $(document).ready(function(){
@@ -41,7 +30,7 @@ var readContactCount = 0
 
 $.ajax({
   dataType: "json",
-  url: config.server + "trial.json",
+  url: config.server + "screen/1",
   method: "GET",
   cache: false,
     success: function(events){
@@ -53,11 +42,11 @@ $.ajax({
           $("#screen1").append("<div id = \"item" + id + "\"></div>");
           $("#item"+id).css("border", events[k].border);
           $("#item"+id).css("color", events[k].color);
-          $("#item"+id).text(events[k].title);
+          $("#item"+id).text(events[k].label);
         }
         else if(events[k].type == "button"){
           if(events[k].plc == "writeRegister"){
-            $("#screen1").append("<button type=\"button\" onclick=\"writeRegister("+events[k].register+","+events[k].value+")\" id = \"item" + id + "\">"+ events[k].title + "</button>");
+            $("#screen1").append("<button type=\"button\" onclick=\"writeRegister("+events[k].register+","+events[k].value+")\" id = \"item" + id + "\">"+ events[k].label + "</button>");
           }
         }
         else if(events[k].type == "img"){
@@ -111,49 +100,55 @@ $.ajax({
   for(var i = 0; i<readCoilCount; i++){
     var coil = plcReadCoil[i]
     window.coiltest = plcReadCoil;
-    $.ajax({
-      dataType: "json",
-      url: config.server + "/coil/" + coil +"/" + i,
-      method: "GET",
-      cache: false,
-        success: function(events){
-          window.coils = events;
-          $("#item"+plcReadCoilId[events.id]).text(events.coil);
-        }
+    if(coil){
+      $.ajax({
+        dataType: "json",
+        url: config.server + "/coil/" + coil +"/" + i,
+        method: "GET",
+        cache: false,
+          success: function(events){
+            window.coils = events;
+            $("#item"+plcReadCoilId[events.id]).text(events.coil);
+          }
       })
+    }
   }
   //update reading registers
   for(var j = 0; j<readRegisterCount; j++){
     var register = plcReadRegister[j]
     window.registertest = plcReadRegister;
-    $.ajax({
-      dataType: "json",
-      url: config.server + "/register/" + register +"/" + j,
-      method: "GET",
-      cache: false,
-        success: function(events){
-          window.registers = events;
-          $("#item"+plcReadRegisterId[events.id]).text(events.register);
-        }
+    if(register){
+      $.ajax({
+        dataType: "json",
+        url: config.server + "/register/" + register +"/" + j,
+        method: "GET",
+        cache: false,
+          success: function(events){
+            window.registers = events;
+            $("#item"+plcReadRegisterId[events.id]).text(events.register);
+          }
       })
+    }
   }
   window.contacts = readContactCount
   //update input contact
   for(var i = 0; i<readContactCount; i++){
     var contact = plcReadContact[i]
-    window.contacttest = plcReadContact;
-    $.ajax({
-      dataType: "json",
-      url: config.server + "/contact/" + contact +"/" + i,
-      method: "GET",
-      cache: false,
-        success: function(events){
-          window.contact = events;
-          $("#item"+plcReadContactId[events.id]).text(events.contact);
-        }
-      })
+    if(contact){
+      window.contacttest = plcReadContact;
+      $.ajax({
+        dataType: "json",
+        url: config.server + "/contact/" + contact +"/" + i,
+        method: "GET",
+        cache: false,
+          success: function(events){
+            window.contact = events;
+            $("#item"+plcReadContactId[events.id]).text(events.contact);
+          }
+        })
+    }
   }
-},2000)
+},20000)
 
 
 

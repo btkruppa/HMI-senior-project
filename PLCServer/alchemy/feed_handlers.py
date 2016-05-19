@@ -217,31 +217,46 @@ class PresetRegisterHandler(BaseHandler):
     def get(self, register, val):
         presetMultipleRegisters(int(register), int(val))
         self.write(json.dumps({'value':val}))
-    # def post(self):
-    #     data = self.get_argument("data", None)
-    #     feed_id = self.get_argument("feed_id", None)
-    #     title = self.get_argument("title", None)
-    #     item = Item(data = data,feed_id = feed_id, title = title)
-    #     item = addOrUpdate(item)
-    #     self.write({})
 
 class ElementHandler(BaseHandler):
-    def post(self):
-        data = self.get_argument("data", None)
-        feed_id = self.get_argument("feed_id", None)
-        title = self.get_argument("title", None)
-        item = Item(data = data,feed_id = feed_id, title = title)
-        item = addOrUpdate(item)
-        self.write({})
+    def get(self, id):
+        element = query_by_id(Element, id)
+        if not element:
+            return self.write({'error':'feed does not exist'})
+        self.write({'element':element.to_json()})
 
-class FeedHandler(BaseHandler):
+    def post(self):
+        screen_id = self.get_argument("screen_id", None)
+        left = self.get_argument("left", None)
+        top = self.get_argument("top", None)
+        type = self.get_argument("type", None)
+        border = self.get_argument("border", None)
+        plc = self.get_argument("plc", None)
+        color = self.get_argument("color", None)
+        width = self.get_argument("width", None)
+        height = self.get_argument("height", None)
+        unit1 = self.get_argument("unit1", None)
+        unit2 = self.get_argument("unit2", None)
+        unit3 = self.get_argument("unit3", None)
+        unit4 = self.get_argument("unit4", None)
+        level = self.get_argument("level", None)
+        label = self.get_argument("label", None)
+        value = self.get_argument("value", None)
+        register = self.get_argument("register", None)
+        coil = self.get_argument("coil", None)
+        contact = self.get_argument("contact", None)
+        element = Element(screen_id = screen_id, left = left, top = top, type = type, border = border, plc = plc, color = color, width = width, height = height, unit1 = unit1, unit2 = unit2, unit3 = unit3, unit4 = unit4, level = level, label = label, value = value, register = register, coil = coil, contact = contact)
+        element = addOrUpdate(element)
+        self.write({'element': element.to_json()})
+
+class ScreenHandler(BaseHandler):
     def get(self, id):
         #item = query_by_id(Item, id)
-        item = query_by_field(Item, "feed_id", id)
-        if not item:
+        elements = query_by_field(Element, "screen_id", id)
+        if not elements:
             return self.write({'error':'feed does not exist'})
 
-        self.write(json.dumps([i.to_json() for i in item]))
+        self.write(json.dumps([i.to_json() for i in elements]))
         #self.write({'item':item.to_json()})
 
 

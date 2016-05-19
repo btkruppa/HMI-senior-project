@@ -7,6 +7,7 @@ var handlers = [
 	["/NewElement", editHandler],
 	["/EditFeed/.*", feed2Handler],
 	["/feed/.*", feedHandler],
+	["/screen/.*", screenHandler],
 	["/NewFeed", feedHandler],
 	["/.*", pageHandler],
 	[".*", indexHandler]
@@ -67,6 +68,15 @@ function feedHandler(id) {
 		return id;
 	}
 	feedId = getID;
+}
+
+var screenId;
+function screenHandler(id){
+	loader(main, "static/html/Screen.html", function() {});
+	function getID() {
+		return id;
+	}
+	screenId = getID;
 }
 
 function feed2Handler(id) {

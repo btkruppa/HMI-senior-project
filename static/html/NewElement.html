@@ -16,15 +16,15 @@ function logJSON(json) {
 
 deleted = false;
 // Adds a new item
-function addItem(feed_id, title, description, left, start, end, repeat) {
+function addItem(screen_id, left, top, type, border, plc, color, width, height, unit1, unit2, unit3, unit4, level, label, value, register, coil, contact) {
     $.ajax({
-        url: config.server+"trial.json",
-        method: "PUT",
-        data: {"feed_id": feed_id, "title": title, "description": description, "left": left, "start": start, "end": end, "repeat": repeat},
+        url: config.server+"/element",
+        method: "POST",
+        data: {"screen_id": screen_id, "left": left, "top": top, "type":type, "border": border, "plc": plc, "color": color, "width": width, "height": height, "unit1": unit1, "unit2": unit2, "unit3": unit3, "unit4": unit4, "level": level, "label": label, "value": value, "register": register, "coil": coil, "contact": contact},
         cache: false,
         success: function(data) {
             logJSON(data["item"]);
-            window.location.hash = "#/planner";
+            window.location.hash = "#/screen";
         }, error: function(XMLHttpRequest, textStatus, errorThrown) {
             log("Status: " + textStatus + " Error: " + errorThrown);
         }
@@ -74,36 +74,34 @@ function submitForm() {
         return;
 
     var id = getIdent();
-    var title = $("#title").val();
+    var label = $("#label").val();
     var left = $("#left").val();
-    var desc = $("#descrip").val();
-    var repeat = $("#repeat").val();
-
-
-    var start = $("#start").val();
-    var end = $("#end").val();
-    if (moment($("#end").val()).isBefore(start)){
-      end = start;
-    }
-    var feed_id = $("#feeds").val();
-
-    // If all day event, then set start to beginning of day and end to end of day
-    var allDay = $("#AllDayEvent").prop('checked');
-    if (allDay) {
-        // Note: if you just use .format() here, you'll get a 500 error with
-        //  [setup:28] can't compare offset-naive and offset-aware datetimes
-        start = moment(start).startOf('day').format("MM-DD-YYYY HH:mm:ss");
-        end = moment(end).endOf('day').format("MM-DD-YYYY HH:mm:ss");
-    }
+    var screen_id = $("#screen_id").val();
+    var top = $("#top").val();
+    var type = $("#type").val();
+    var border = $("#border").val();
+    var color = $("#color").val();
+    var level = $("#level").val();
+    var height = $("#height").val();
+    var width = $("#width").val();
+    var unit1 = $("#unit1").val();
+    var unit2 = $("#unit2").val();
+    var unit3 = $("#unit3").val();
+    var unit4 = $("#unit4").val();
+    var plc = $("#plc").val();
+    var value = $("#value").val();
+    var register = $("#address").val();
+    var coil = $("#address").val();
+    var contact = $("#address").val();
 
     // New item
     if (id == undefined) {
-        log("Adding item: "+title+" - "+desc+" - "+left+" - "+start+" - "+end+" - "+repeat);
-        addItem(feed_id, title, desc, left, start, end, repeat);
+        log("Adding item: "+label+"- "+left);
+        addItem(screen_id, left, top, type, border, plc, color, width, height, unit1, unit2, unit3, unit4, level, label, value, register, coil, contact);
 
     // Edit item
     } else {
-        log("Updating item: "+id+" - "+title+" - "+desc+" - "+left+" - "+start+" - "+end+" - "+repeat);
+        //log("Updating item: "+id+" - "+title+" - "+desc+" - "+left+" - "+start+" - "+end+" - "+repeat);
         updateItem(feed_id, id, title, desc, left, start, end, repeat);
     }
 }
@@ -184,7 +182,6 @@ function getFeeds(feed_id){
 
 $(document).ready(function(){
   var id = getIdent();
-  var id = id.substring(4,6);
   // Update the select box whenever the start date is changed
   /*$("#start").on("change", updateSelect);
   $("#start").on("dateChange",updateSelect);
@@ -193,32 +190,40 @@ $(document).ready(function(){
   $("#AllDayEvent").on("change", updateAllDay);*/
 
   if (id != undefined){
+    id = id.substring(4,6);
     $.ajax({
       dataType: "json",
-      url: config.server + "trial.json",
+      url: config.server + "/element/" + id,
       method: "GET",
       cache: false,
         success:function(item){
+
+          item = item.element;
           window.items = item;
-          for (var k = 0; k < item.length; k++){
-            if(id == item[k].id){
-              $("#pageTitle").html("Edit Element");
-              $("#title").val(item[k].title);
-              $("#left").val(item[k].left);
-              $("#top").val(item[k].top);
-              $("#left").val(item[k].left);
-              $("#type").val(item[k].type);
-              $("#border").val(item[k].border);
-              $("#color").val(item[k].color);
-              $("#level").val(item[k].level);
-              $("#height").val(item[k].height);
-              $("#width").val(item[k].width);
-              $("#unit1").val(item[k].unit1);
-              $("#unit2").val(item[k].unit2);
-              $("#unit3").val(item[k].unit3);
-              $("#unit4").val(item[k].unit4);
-            }
-          }
+          //for (var k = 0; k < item.length; k++){
+            //if(id == item[k].id){
+          $("#pageTitle").html("Edit Element");
+          $("#label").val(item.label);
+          $("#left").val(item.left);
+          $("#top").val(item.top);
+          $("#type").val(item.type);
+          $("#border").val(item.border);
+          $("#color").val(item.color);
+          $("#level").val(item.level);
+          $("#height").val(item.height);
+          $("#width").val(item.width);
+          $("#unit1").val(item.unit1);
+          $("#unit2").val(item.unit2);
+          $("#unit3").val(item.unit3);
+          $("#unit4").val(item.unit4);
+          $("#value").val(item.value);
+          $("#address").val(item.coil);
+          $("#address").val(item.register);
+          $("#address").val(item.contact);
+          $("#plc").val(item.plc);
+
+            //}
+          //}
 
             //this will be needed once the screen feature, similar to old way
             //of feeds
@@ -308,7 +313,7 @@ $(document).ready(function(){
 <form>
   <div class="row">
     <div class="large-12 columns">
-      <input type="text" placeholder="Title" id = "title" />
+      <input type="text" placeholder="Title" id = "label" />
     </div>
   </div>
   <div class="row">
@@ -320,8 +325,8 @@ $(document).ready(function(){
     </div>
     <div class="large-1 columns">
       <select id = "unit1">
-        <option value="px">px</option>
         <option value="%">%</option>
+        <option value="px">px</option>
         <option value="pt">pt</option>
         <option value="in">in</option>
       </select>
@@ -334,8 +339,8 @@ $(document).ready(function(){
     </div>
     <div class="large-1 columns">
       <select id = "unit2">
-        <option value="px">px</option>
         <option value="%">%</option>
+        <option value="px">px</option>
         <option value="pt">pt</option>
         <option value="in">in</option>
       </select>
@@ -349,8 +354,8 @@ $(document).ready(function(){
     </div>
     <div class="large-1 columns">
       <select id = "unit3">
-        <option value="px">px</option>
         <option value="%">%</option>
+        <option value="px">px</option>
         <option value="pt">pt</option>
         <option value="in">in</option>
       </select>
@@ -363,8 +368,8 @@ $(document).ready(function(){
     </div>
     <div class="large-1 columns">
       <select id = "unit4">
-        <option value="px">px</option>
         <option value="%">%</option>
+        <option value="px">px</option>
         <option value="pt">pt</option>
         <option value="in">in</option>
       </select>
@@ -374,10 +379,10 @@ $(document).ready(function(){
   <div class="row">
     <div class="large-3 columns">
       <label>Screen
-        <select id = "screen">
-          <option value="screen1">screen1</option>
-          <option value="screen2">screen2</option>
-          <option value="screen3">screen3</option>
+        <select id = "screen_id">
+          <option value="1">screen1</option>
+          <option value="2">screen2</option>
+          <option value="3">screen3</option>
         </select>
       </label>
     </div>
@@ -444,9 +449,25 @@ $(document).ready(function(){
      <div class="large-6 columns">
        <label>PLC Communication Type
          <select id = "plc">
-           <option value="read">Read from PLC</option>
-           <option value="write">Write to PLC</option>
+           <option value="readCoil">None</option>
+           <option value="readCoil">Read Coil</option>
+           <option value="writeCoil">Write Coil</option>
+           <option value="readRegister">Read Register</option>
+           <option value="writeRegister">Write Register</option>
+           <option value="readContact">Read Input Contact</option>
          </select>
+       </label>
+     </div>
+   </div>
+   <div class="row">
+     <div class="large-6 columns">
+       <label>Address
+          <input type="text" placeholder="Register, Coil, or Contact address" id = "address"/>
+       </label>
+     </div>
+     <div class="large-6 columns">
+       <label>Value
+           <input type="text" placeholder="Value to write" id = "value"/>
        </label>
      </div>
    </div>
