@@ -249,6 +249,39 @@ class ElementHandler(BaseHandler):
         element = addOrUpdate(element)
         self.write({'element': element.to_json()})
 
+    def put(self, id):
+        element = query_by_id(Element, id)
+        if not element:
+            return self.write({'error':'item does not exist'})
+        element.screen_id = self.get_argument("screen_id", None)
+        element.left = self.get_argument("left", None)
+        element.top = self.get_argument("top", None)
+        element.type = self.get_argument("type", None)
+        element.border = self.get_argument("border", None)
+        element.plc = self.get_argument("plc", None)
+        element.color = self.get_argument("color", None)
+        element.width = self.get_argument("width", None)
+        element.height = self.get_argument("height", None)
+        element.unit1 = self.get_argument("unit1", None)
+        element.unit2 = self.get_argument("unit2", None)
+        element.unit3 = self.get_argument("unit3", None)
+        element.unit4 = self.get_argument("unit4", None)
+        element.level = self.get_argument("level", None)
+        element.label = self.get_argument("label", None)
+        element.value = self.get_argument("value", None)
+        element.register = self.get_argument("register", None)
+        element.coil = self.get_argument("coil", None)
+        element.contact = self.get_argument("contact", None)
+        element = addOrUpdate(element)
+        self.write({'element': element.to_json()})
+
+    def delete(self, id):
+        element = query_by_id(Element, id)
+        if not element:
+            return self.write({'error':'item does not exist'})
+        delete_thing(element)
+        self.write(json.dumps("success"))
+
 class ScreenHandler(BaseHandler):
     def get(self, id):
         #item = query_by_id(Item, id)

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<!--script src='static/fullcalendar/lib/moment.min.js'></script>
-<script type="text/javascript" src="static/datetimepicker/foundation_calendar.js"></script>-->
 <style>
 #EndDateRow { display: none; }
 </style>
 <script>
 debug=false;
+var id = getIdent();
+if(id != undefined){
+  id = id.substring(4,6);
+}
+
 function log(str) {
     if (debug)
         $("#log").append(str+"<br>")
@@ -32,15 +35,15 @@ function addItem(screen_id, left, top, type, border, plc, color, width, height, 
 }
 
 // Update a item
-function updateItem(feed_id, id, title, description, left, start, end, repeat) {
+function updateItem(id, screen_id, left, top, type, border, plc, color, width, height, unit1, unit2, unit3, unit4, level, label, value, register, coil, contact) {
     $.ajax({
-        url: config.server+"/item/"+ String(id),
-        method: "POST",
-        data: {"feed_id": feed_id, "id": id, "title": title, "description": description,  "left": left, "start": start, "end": end, "repeat": repeat},
+        url: config.server+"/element/" + id,
+        method: "PUT",
+        data: {"screen_id": screen_id, "left": left, "top": top, "type":type, "border": border, "plc": plc, "color": color, "width": width, "height": height, "unit1": unit1, "unit2": unit2, "unit3": unit3, "unit4": unit4, "level": level, "label": label, "value": value, "register": register, "coil": coil, "contact": contact},
         cache: false,
         success: function(data) {
             logJSON(data["item"]);
-            window.location.hash = "#/planner";
+            window.location.hash = "#/screen";
         }, error: function(XMLHttpRequest, textStatus, errorThrown) {
             log("Status: " + textStatus + " Error: " + errorThrown);
         }
@@ -53,13 +56,13 @@ function delItem(id) {
     if (!deleted) {
         deleted = true;
         $.ajax({
-            url: config.server+"/item/"+String(id),
+            url: config.server+"/element/"+id,
             method: "DELETE",
-            data: {"id": String(id)},
+            data: {"id": id},
             cache: false,
             success: function(data) {
                 logJSON(data);
-                window.location.hash = "#/planner";
+                window.location.hash = "#/screen";
             }, error: function(XMLHttpRequest, textStatus, errorThrown) {
                 log("Status: " + textStatus + " Error: " + errorThrown);
             }
@@ -73,7 +76,6 @@ function submitForm() {
     if (deleted)
         return;
 
-    var id = getIdent();
     var label = $("#label").val();
     var left = $("#left").val();
     var screen_id = $("#screen_id").val();
@@ -102,16 +104,11 @@ function submitForm() {
     // Edit item
     } else {
         //log("Updating item: "+id+" - "+title+" - "+desc+" - "+left+" - "+start+" - "+end+" - "+repeat);
-        updateItem(feed_id, id, title, desc, left, start, end, repeat);
+        updateItem(id, screen_id, left, top, type, border, plc, color, width, height, unit1, unit2, unit3, unit4, level, label, value, register, coil, contact);
     }
 }
 
-function week_of_month(date) {
 
-        prefixes = ["first","second","third","fourth","fifth"];
-    return prefixes[0 | date.date() / 7];
-
-}
 
 function updateSelect(){
   var type = $("#type").val();
@@ -135,11 +132,7 @@ function updateAllDay() {
         end.show();
 }
 
-// We want to do this after we set the initial values, so we've moved this here from
-// foundation_calendar.js
-/*function loadCalendar() {
-    $.fcdp.init();
-}*/
+
 
 // Error if the feed wasn't found
 function feedNotFound() {
@@ -181,27 +174,17 @@ function getFeeds(feed_id){
 
 
 $(document).ready(function(){
-  var id = getIdent();
-  // Update the select box whenever the start date is changed
-  /*$("#start").on("change", updateSelect);
-  $("#start").on("dateChange",updateSelect);
 
-  // Show/hide the end date box based on if all day is checked
-  $("#AllDayEvent").on("change", updateAllDay);*/
 
   if (id != undefined){
-    id = id.substring(4,6);
     $.ajax({
       dataType: "json",
       url: config.server + "/element/" + id,
       method: "GET",
       cache: false,
         success:function(item){
-
           item = item.element;
           window.items = item;
-          //for (var k = 0; k < item.length; k++){
-            //if(id == item[k].id){
           $("#pageTitle").html("Edit Element");
           $("#label").val(item.label);
           $("#left").val(item.left);
@@ -221,58 +204,16 @@ $(document).ready(function(){
           $("#address").val(item.register);
           $("#address").val(item.contact);
           $("#plc").val(item.plc);
-
-            //}
-          //}
-
-            //this will be needed once the screen feature, similar to old way
-            //of feeds
-            //getScreens(item.screen_id);
-            //$("#screen").val(item[id].screen_id);
-
-
-
-            //old code
-            /*$("#start").val(moment(item.item.start).format("MM-DD-YYYY HH:mm:ss"));
-            $("#end").val(moment(item.item.end).format("MM-DD-YYYY HH:mm:ss"));
-            $("#descrip").val(item.item.description);
-            $("#pageTitle").html("Edit Element");
-
-            // Determine if all day event
-            var start = moment(item.item.start);
-            var startOf = moment(item.item.start).startOf('day');
-            var end = moment(item.item.end);
-            var endOf = moment(item.item.end).endOf('day');
-            var endStartOf = moment(item.item.end).startOf('day');
-
-            // Deal with the all day events being represented in the database as
-            // from 00:00:00 to 23:59:59 of the day.
-            allDay = (start.format() == startOf.format() && end.format() == endOf.format());
-            $("#AllDayEvent").prop('checked', allDay);
-            loadCalendar();
-            updateSelect();
-
-
-            getFeeds(item.item.feed_id);
-            updateAllDay();*/
         }
     });
   }
    else{
-      /*$("#title").html();
-      $("#descrip").val();*/
       $("#pageTitle").html("New Element");
-
       // Don't show the delete button when creating a new feed
       $("form input[value=Delete]").hide();
-
-      // Initialize the date-time picker
-      /*loadCalendar();
-      updateSelect();*/
       getFeeds();
+
     }
-
-
 
     // Make the submit button not actually submit the form but
     // send data to the server via AJAX
@@ -282,7 +223,7 @@ $(document).ready(function(){
         return false;
     });
 
-    // Cancel button goes back to the item page
+    // Cancel button goes back to the screens page
     $("form input[value=Cancel]").click(function() {
         // Make it work from either calendar or planner pages by just using back button
         window.history.back();
@@ -291,7 +232,7 @@ $(document).ready(function(){
 
     // Delete on confirm; off to remove the one from the feeds page if set
     $(document).off('confirm.reveal').on('confirm.reveal', '[data-confirm]', function() {
-        delItem(getIdent());
+        delItem(id);
         $('.reveal-modal').foundation('reveal', 'close');
         return false;
     });
@@ -477,7 +418,7 @@ $(document).ready(function(){
       <input class="button" type="button" value="Cancel"/>
     </div>
     <div class="large-6 small-6 columns">
-        <input class="button right" type="button" data-confirm='{"title":"Are you sure?","body":"Are you sure you want to delete this event?","ok":"Delete the event!"}' value="Delete"/>
+        <input class="button right" type="button" data-confirm='{"title":"Are you sure?","body":"Are you sure you want to delete this element?","ok":"Delete the element!"}' value="Delete"/>
     </div>
   </div>
 
