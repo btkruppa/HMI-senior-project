@@ -29,6 +29,8 @@ class Application(tornado.web.Application):
             (r"/register/(.*)/(.*)", ReadRegisterHandler),
             (r"/presetRegister", PresetRegisterHandler),
             (r"/presetRegister/(.*)/(.*)", PresetRegisterHandler),
+            (r"/forceCoil", ForceCoilHandler),
+            (r"/forceCoil/(.*)/(.*)", ForceCoilHandler),
             (r"/screen", ScreenHandler),
             (r"/screen/(.*)", ScreenHandler),
             (r"/element", ElementHandler),

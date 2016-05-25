@@ -6,7 +6,20 @@ function writeRegister(register,value){
   $.ajax({
     dataType: "json",
     url: config.server + "/presetRegister/" + register + "/" + value,
-    method: "GET",
+    method: "POST",
+    cache: false,
+      success: function(events){
+        window.write = events
+      }
+  })
+}
+
+function writeCoil(coil,value){
+  window.coil = coil
+  $.ajax({
+    dataType: "json",
+    url: config.server + "/forceCoil/" + coil + "/" + value,
+    method: "POST",
     cache: false,
       success: function(events){
         window.write = events
@@ -47,6 +60,9 @@ $.ajax({
         else if(events[k].type == "button"){
           if(events[k].plc == "writeRegister"){
             $("#screen1").append("<button type=\"button\" onclick=\"writeRegister("+events[k].register+","+events[k].value+")\" id = \"item" + id + "\">"+ events[k].label + "</button>");
+          }
+          else if(events[k].plc == "writeCoil"){
+            $("#screen1").append("<button type=\"button\" onclick=\"writeCoil("+events[k].coil+","+events[k].value+")\" id = \"item" + id + "\">"+ events[k].label + "</button>");
           }
         }
         else if(events[k].type == "img"){
